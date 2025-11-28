@@ -10,32 +10,32 @@ Held in `CUSTOM_scenario_ss2` -- looks to update a specific user's phone number 
 ### 3. Read contact by name
 Held in `CUSTOM_scenario_ss3` -- searches for a contact by name within a contacts app (`/are/simulation/apps/contacts.py`)
 
-### 4. Read email by ID
-Held in `CUSTOM_scenario_ss4` -- retrieves email content by email ID within an email client app (`/are/simulation/apps/email_client.py`)
+### 4. Read order details (Low similarity, clear delegation)
+Held in `CUSTOM_scenario_ss4` -- retrieves order details by order ID within a shopping app (`/are/simulation/apps/shopping.py`). All 7 apps present; ShoppingApp is distinct with no similar functions, making routing straightforward.
 
-### 5. Read calendar event by ID
-Held in `CUSTOM_scenario_ss5` -- retrieves calendar event details by event ID within a calendar app (`/are/simulation/apps/calendar.py`)
+### 5. Read calendar event (Medium similarity, moderate delegation challenge)
+Held in `CUSTOM_scenario_ss5` -- retrieves calendar event details by event ID within a calendar app (`/are/simulation/apps/calendar.py`). All 7 apps present; CalendarApp shares time-based concepts with ReminderApp, requiring clear prompt parsing.
 
-### 6. Read conversation messages
-Held in `CUSTOM_scenario_ss6` -- reads conversation messages by conversation ID within a messaging app (`/are/simulation/apps/messaging_v2.py`)
+### 6. Read contact (High similarity, challenging delegation)
+Held in `CUSTOM_scenario_ss6` -- retrieves contact information by contact ID within a contacts app (`/are/simulation/apps/contacts.py`). All 7 apps present; ContactsApp and DBApp both have get_* functions for contact-like data, creating ambiguity.
 
-### 7. Read order details
-Held in `CUSTOM_scenario_ss7` -- retrieves order details by order ID within a shopping app (`/are/simulation/apps/shopping.py`)
+### 7. Read database entry (High similarity, very challenging delegation)
+Held in `CUSTOM_scenario_ss7` -- retrieves database entry by entry ID within a database app (`/are/simulation/apps/db.py`). All 7 apps present; DBApp and ContactsApp have similar data structures and overlapping get functions, requiring subtle prompt interpretation.
 
 ### 8. Update contact email
 Held in `CUSTOM_scenario_ss8` -- updates a contact's email address within a contacts app (`/are/simulation/apps/contacts.py`)
 
-### 9. Send email
-Held in `CUSTOM_scenario_ss9` -- sends an email to recipients within an email client app (`/are/simulation/apps/email_client.py`)
+### 9. Add reminder (Low similarity, clear delegation)
+Held in `CUSTOM_scenario_ss9` -- adds a reminder within a reminder app (`/are/simulation/apps/reminder.py`). All 7 apps present; ReminderApp is functionally distinct with unique add_reminder function, making routing unambiguous.
 
-### 10. Add calendar event
-Held in `CUSTOM_scenario_ss10` -- creates a new calendar event within a calendar app (`/are/simulation/apps/calendar.py`)
+### 10. Add calendar event (Medium similarity, moderate delegation challenge)
+Held in `CUSTOM_scenario_ss10` -- creates a new calendar event within a calendar app (`/are/simulation/apps/calendar.py`). All 7 apps present; CalendarApp and ReminderApp both handle scheduling but with different event types and APIs.
 
-### 11. Send message
-Held in `CUSTOM_scenario_ss11` -- sends a message to a user within a messaging app (`/are/simulation/apps/messaging_v2.py`)
+### 11. Send email (High similarity, challenging delegation)
+Held in `CUSTOM_scenario_ss11` -- sends an email to recipients within an email client app (`/are/simulation/apps/email_client.py`). All 7 apps present; EmailClientApp and MessagingAppV2 both handle communication with send_* functions, creating ambiguity.
 
-### 12. Add item to cart
-Held in `CUSTOM_scenario_ss12` -- adds an item to shopping cart within a shopping app (`/are/simulation/apps/shopping.py`)
+### 12. Update contact (High similarity, very challenging delegation)
+Held in `CUSTOM_scenario_ss12` -- updates a contact's email address within a contacts app (`/are/simulation/apps/contacts.py`). All 7 apps present; ContactsApp and DBApp both support update/edit operations on similar data structures, requiring careful prompt interpretation.
 
 ## Multi-step, single-turn
 x5

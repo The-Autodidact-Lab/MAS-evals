@@ -286,7 +286,7 @@ After gathering information from all these sources, compare the data, reason abo
             )
 
             oracle3 = (
-                email.get_emails(offset=0, limit=5)
+                email.list_emails(offset=0, limit=5)
                 .oracle()
                 .depends_on(event1, delay_seconds=15)
             )

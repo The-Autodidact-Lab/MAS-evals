@@ -1,70 +1,96 @@
+from datetime import datetime
 from are.simulation.apps.agent_user_interface import AgentUserInterface
-from are.simulation.apps.messaging_v2 import ConversationV2, MessageV2, MessagingAppV2, MessagingAppMode
+from are.simulation.apps.contacts import Contact, ContactsApp, Gender, Status
+from are.simulation.apps.db import DBApp, DBEntry
+from are.simulation.apps.email_client import Email, EmailClientV2, EmailFolderName
+from are.simulation.apps.messaging_v2 import MessagingAppV2, MessagingAppMode
+from are.simulation.apps.calendar import CalendarApp
+from are.simulation.apps.shopping import ShoppingApp
+from are.simulation.apps.reminder import ReminderApp
 from are.simulation.scenarios.scenario import Scenario, ScenarioValidationResult
 from are.simulation.scenarios.utils.registry import register_scenario
 from are.simulation.types import EventRegisterer, EventType
 
 @register_scenario("ss6")
 class ss6(Scenario):
-    target_conversation_id: str | None = None
+    target_contact_id: str | None = None
 
     def init_and_populate_apps(self, *args, **kwargs) -> None:
-        # initialize apps
-        messaging = MessagingAppV2(
-            current_user_id="user1",
-            current_user_name="User",
-            mode=MessagingAppMode.NAME,
-        )
+        # initialize all 7 apps
         agui = AgentUserInterface()
+        contacts = ContactsApp()
+        db = DBApp()
+        email = EmailClientV2()
+        messaging = MessagingAppV2(current_user_id="user1", current_user_name="User", mode=MessagingAppMode.NAME)
+        calendar = CalendarApp()
+        shopping = ShoppingApp()
+        reminder = ReminderApp()
         
-        # Add users
-        messaging.add_users(["Alice", "Bob", "Charlie"])
-
-        # initial population of conversations
-        conv1 = ConversationV2(
-            participant_ids=["user1", messaging.get_user_id("Alice")],
-            title="Alice",
-        )
-        conv1.messages.append(MessageV2(
-            sender_id=messaging.get_user_id("Alice"),
-            content="Hello, how are you?",
+        # Populate ContactsApp with contacts (target app) - high similarity with DBApp
+        contacts.add_contact(Contact(
+            contact_id="1",
+            first_name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+            phone="1234567890",
+            gender=Gender.MALE,
+            status=Status.EMPLOYED,
         ))
-        messaging.add_conversation(conv1)
 
-        target_conv = ConversationV2(
-            participant_ids=["user1", messaging.get_user_id("Bob")],
-            title="Bob",
-        )
-        target_conv.messages.append(MessageV2(
-            sender_id=messaging.get_user_id("Bob"),
-            content="Can we meet tomorrow?",
+        self.target_contact_id = contacts.add_contact(Contact(
+            contact_id="2",
+            first_name="Jane",
+            last_name="Smith",
+            email="jane.smith@example.com",
+            phone="0987654321",
+            gender=Gender.FEMALE,
+            status=Status.EMPLOYED,
         ))
-        self.target_conversation_id = target_conv.conversation_id
-        messaging.add_conversation(target_conv)
 
-        conv3 = ConversationV2(
-            participant_ids=["user1", messaging.get_user_id("Charlie")],
-            title="Charlie",
-        )
-        conv3.messages.append(MessageV2(
-            sender_id=messaging.get_user_id("Charlie"),
-            content="Thanks for the help!",
+        contacts.add_contact(Contact(
+            contact_id="3",
+            first_name="Jim",
+            last_name="Brown",
+            email="jim.brown@example.com",
+            phone="1112223333",
+            gender=Gender.MALE,
+            status=Status.STUDENT,
         ))
-        messaging.add_conversation(conv3)
 
-        self.apps = [messaging, agui]
+        # Populate DBApp with similar contact-like data (high similarity distractor)
+        db.create_db_entry(DBEntry(
+            entry_id="1",
+            name="Sarah Johnson",
+            email="sarah@example.com",
+            phone="5551234567",
+            address="456 Oak St",
+            city="Anytown",
+            state="CA",
+            zip_code="12345",
+            country="USA",
+            created_at=datetime.now().isoformat(),
+            updated_at=datetime.now().isoformat(),
+        ))
+
+        # Populate distractor apps
+        email.add_email(Email(sender="sender@example.com", recipients=["user@meta.com"], subject="Test", content="Test email"), EmailFolderName.INBOX)
+        messaging.add_users(["Alice"])
+        calendar.add_calendar_event(title="Meeting", start_datetime="2024-01-15 10:00:00", end_datetime="2024-01-15 11:00:00")
+        reminder.add_reminder(title="Buy groceries", due_datetime="2024-01-20 18:00:00", description="Remember to buy groceries")
+
+        self.apps = [contacts, db, email, messaging, calendar, shopping, reminder, agui]
 
     def build_events_flow(self) -> None:
         agui = self.get_typed_app(AgentUserInterface)
-        messaging = self.get_typed_app(MessagingAppV2)
+        contacts = self.get_typed_app(ContactsApp)
 
         with EventRegisterer.capture_mode():
             event1 = agui.send_message_to_agent(
-                content="Please read the conversation with Bob",
+                content="Please get the contact information for Jane Smith",
             ).depends_on(None, delay_seconds=2)
 
             oracle1 = (
-                messaging.read_conversation(self.target_conversation_id, offset=0, limit=10)
+                contacts.get_contact(self.target_contact_id)
                 .oracle()
                 .depends_on(event1, delay_seconds=2)
             )
@@ -76,9 +102,9 @@ class ss6(Scenario):
             event for event in env.event_log.list_view() if event.event_type == EventType.AGENT
         ]
 
-        # ensure that agent called the read_conversation tool
+        # ensure that agent called the get_contact tool
         try:
-            target_event = next(event for event in agent_events if event.action.function_name == "read_conversation" and event.action.args["conversation_id"] == self.target_conversation_id)
+            target_event = next(event for event in agent_events if event.action.function_name == "get_contact" and event.action.args["contact_id"] == self.target_contact_id)
         except StopIteration:
             return ScenarioValidationResult(success=False, exception=Exception("Target event not found"))
         

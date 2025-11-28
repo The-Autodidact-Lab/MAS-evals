@@ -15,4 +15,7 @@ source .venv/bin/activate
 uv pip install -e .
 ```
 
-2. 
+2. Run evals
+```bash
+python3 -m are.simulation.main -s (SCENARIO_NAME) (-s MULTIPLE SCENARIOS) -a default -m (MODEL) --provider llama-api
+```
