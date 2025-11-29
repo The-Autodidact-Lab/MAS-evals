@@ -5,6 +5,7 @@
 # the root directory of this source tree.
 
 
+import json
 import textwrap
 
 from are.simulation.tool_box import get_tool_description_with_args
@@ -31,4 +32,15 @@ class FinalAnswerTool(Tool):
     output_type = "any"
 
     def forward(self, answer):
-        return answer
+        # Normalize the answer to always return a string
+        # This ensures compatibility with _append_final_answer which expects string or MMObservation
+        if isinstance(answer, str):
+            return answer
+        elif isinstance(answer, (dict, list)):
+            # Convert structured data to JSON string for readability
+            return json.dumps(answer, indent=2, ensure_ascii=False)
+        elif answer is None:
+            return ""
+        else:
+            # Convert any other type (numbers, booleans, etc.) to string
+            return str(answer)

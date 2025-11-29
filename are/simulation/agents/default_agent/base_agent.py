@@ -576,8 +576,8 @@ class BaseAgent:
             )
         )
 
-        self.logger.debug("System prompt is as follows:")
-        self.logger.debug(self.system_prompt)
+        # self.logger.debug("System prompt is as follows:")
+        # self.logger.debug(self.system_prompt)
 
         # Here we update the tools in the action executor
         # to take into account any modifications to the tools that happened after the init
@@ -778,7 +778,7 @@ class BaseAgent:
             and not self.termination_step.condition(self)
         ):
             try:
-                self.logger.debug(f"Starting iteration {self.iterations}...")
+                self.logger.debug(f"[{self.agent_id}] Starting iteration {self.iterations}...")
 
                 self.append_agent_log(
                     StepLog(
@@ -884,10 +884,10 @@ class BaseAgent:
         )
 
         self.logger.debug(f"======== New task for {self.name} ========")
-        self.logger.debug(self.task)
-        self.logger.debug(
-            f"With number of attachments: {len(self.attachments if self.attachments else [])}"
-        )
+        self.logger.debug(f"{self.agent_id}: {self.task[:100]}...")
+        # self.logger.debug(
+        #     f"With number of attachments: {len(self.attachments if self.attachments else [])}"
+        # )
 
         ret = self.execute_agent_loop()
 

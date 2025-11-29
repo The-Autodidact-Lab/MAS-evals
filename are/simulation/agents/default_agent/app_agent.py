@@ -38,7 +38,7 @@ class AppAgent(App):
         timestamp = self.time_manager.time()
         task = str(
             AUIMessage(
-                sender=Sender.USER,
+                sender=Sender.DELEGATED,
                 content=task,
                 timestamp=timestamp,
                 time_read=timestamp,

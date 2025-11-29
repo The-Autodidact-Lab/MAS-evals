@@ -32,7 +32,7 @@ NO_RESPONSE_FROM_USER_DEFAULT_MESSAGE = "No response received from the User."
 class Sender(Enum):
     USER = "User"
     AGENT = "Agent"
-
+    DELEGATED = "Delegated"
 
 @dataclass
 class AUIMessage:
