@@ -108,7 +108,7 @@ class BaseCortexAgent(BaseAgent):
         
         # Extract step trace since last ingestion
         last_idx = self._last_cortex_ingestion_index
-        current_logs = self.logs[last_idx + 1 :]
+        current_logs = self.logs[last_idx - 4 :] # inject contextual logs
         
         if not current_logs:
             return
@@ -122,7 +122,7 @@ class BaseCortexAgent(BaseAgent):
                     "content": log.get_content_for_llm() if hasattr(log, "get_content_for_llm") else str(log),
                     "timestamp": log.timestamp,
                 }
-                for log in current_logs
+                for log in current_logs[-1:]
             ],
         }
         
