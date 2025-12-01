@@ -52,7 +52,7 @@ class AgentBuilder(AbstractAgentBuilder):
         self.llm_engine_builder = llm_engine_builder or LLMEngineBuilder()
 
     def list_agents(self) -> list[str]:
-        return ["default", "multi_agent"]
+        return ["default", "multi_agent", "default_multi_agent"]
 
     def build(
         self,
@@ -135,6 +135,56 @@ class AgentBuilder(AbstractAgentBuilder):
                     )
                     
                     return RunnableARESimulationMultiAgent(
+                        log_callback=env.append_to_world_logs,
+                        llm_engine=llm_engine,
+                        base_agent=placeholder_base_agent,
+                        time_manager=env.time_manager,
+                        max_turns=agent_config.max_turns,
+                        pause_env=env.pause,
+                        resume_env=env.resume_with_offset,
+                        simulated_generation_time_config=(
+                            agent_config.get_base_agent_config().simulated_generation_time_config
+                        ),
+                    )
+                else:
+                    raise ValueError(
+                        f"Agent {agent_config.get_agent_name()} requires a ARESimulationReactBaseAgentConfig"
+                    )
+            
+            case "default_multi_agent":
+                import sys
+                from pathlib import Path
+                # Add workspace root to sys.path to import from run directory
+                workspace_root = Path(__file__).parent.parent.parent.parent.parent
+                if str(workspace_root) not in sys.path:
+                    sys.path.insert(0, str(workspace_root))
+                    
+                from run.runnable_default_multi_agent import (
+                    RunnableARESimulationDefaultMultiAgent,
+                )
+                from are.simulation.agents.default_agent.agent_factory import (
+                    are_simulation_react_json_agent,
+                )
+
+                assert env is not None, "Environment must be provided"
+                assert env.time_manager is not None, "Time manager must be provided"
+                assert env.append_to_world_logs is not None, (
+                    "Log callback must be provided"
+                )
+
+                llm_engine = self.llm_engine_builder.create_engine(
+                    engine_config=agent_config.get_base_agent_config().llm_engine_config,
+                    mock_responses=mock_responses,
+                )
+
+                if isinstance(agent_config, ARESimulationReactAgentConfig):
+                    # Create placeholder base agent (will be replaced with orchestrator in prepare_are_simulation_run)
+                    placeholder_base_agent = are_simulation_react_json_agent(
+                        llm_engine=llm_engine,
+                        base_agent_config=agent_config.base_agent_config,
+                    )
+                    
+                    return RunnableARESimulationDefaultMultiAgent(
                         log_callback=env.append_to_world_logs,
                         llm_engine=llm_engine,
                         base_agent=placeholder_base_agent,
