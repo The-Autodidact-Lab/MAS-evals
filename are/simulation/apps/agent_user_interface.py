@@ -148,7 +148,7 @@ class AgentUserInterface(App):
     @event_registered(operation_type=OperationType.WRITE)
     def send_message_to_user(self, content: str = "") -> str | None:
         """
-        Sends a message to the User. This will end the Agent's turn.
+        Sends a message to the User. This will end the Agent's turn. Must be used in accordance with the formatting specification in the thought-action format.
         :param content: the content to send to the user
         :returns: The response from the user
         """

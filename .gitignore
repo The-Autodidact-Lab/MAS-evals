@@ -181,3 +181,7 @@ workspace*
 **/node_modules
 benchmark_stats.json
 gaia2_results
+
+agent/
+cortex/
+run/

@@ -25,7 +25,7 @@ def generate_tool_description(tools: list[Tool]) -> str:
 
 class FinalAnswerTool(Tool):
     name = "final_answer"
-    description = "Provides a final answer to the given problem."
+    description = "Provides a final answer to the given problem. MUST be called in accordance with the formatting specification in the thought-action format"
     inputs = {
         "answer": {"type": "any", "description": "The final answer to the problem"}
     }

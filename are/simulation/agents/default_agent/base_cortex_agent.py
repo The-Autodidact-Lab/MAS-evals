@@ -75,7 +75,7 @@ class BaseCortexAgent(BaseAgent):
         # inject cortex episodes into system prompt
         if self.cortex:
             cortex_episodes = self.cortex.get_episodes_for_agent(
-                self.agent_id, include_raw=False
+                self.agent_id, include_raw=True
             )
             if cortex_episodes:
                 # build structured text from cortex

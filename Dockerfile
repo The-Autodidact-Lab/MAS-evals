@@ -24,6 +24,9 @@ WORKDIR /app
 COPY pyproject.toml requirements.txt requirements-gui.txt requirements-dev.txt README.md LICENSE ./
 COPY build_hooks ./build_hooks
 COPY are/simulation /app/are/simulation
+COPY agent /app/agent
+COPY cortex /app/cortex
+COPY run /app/run
 RUN rm -rf /app/are/simulation/gui/client
 RUN --mount=type=cache,target=/root/.cache/uv uv pip install --system -e ".[gui]"
 

@@ -110,7 +110,6 @@ Action:
 - For booleans, use true/false in lowercase.
 - Always end with <end_action> immediately after the JSON.
 
-
 === OBSERVATION RULES ===
 - Do NOT generate Observation; the system will insert it.
 
