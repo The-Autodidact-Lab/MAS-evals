@@ -84,6 +84,7 @@ class BaseCortexAgent(BaseAgent):
                     for ep in cortex_episodes
                 ]
                 cortex_context_content = "\n".join(cortex_context_lines)
+                print("\n\n\nCORTEX: ", cortex_context_content, "\n\n\n")
                 cortex_section = f"\n\n<relevant_multiagent_context>\n{cortex_context_content}\n</relevant_multiagent_context>"
                 
                 for msg in history:

@@ -54,4 +54,4 @@ ENV ARE_SIMULATION_SERVER_PORT=8080
 ENV ARE_SIMULATION_SERVER_VERSION=$SERVER_VERSION
 
 # Run
-CMD ["are-gui"]
+CMD ["are-gui", "-m", "openai/gpt-4.1-mini", "--provider", "llama-api"]
